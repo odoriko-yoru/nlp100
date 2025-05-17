@@ -1,0 +1,2 @@
+# dataディレクトリへのパスを取得する環境変数
+export DATA_DIR=$(pwd)/data
