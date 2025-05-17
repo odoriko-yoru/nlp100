@@ -1,0 +1,18 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: ja/index
+chapters:
+- file: ja/ch01
+- file: ja/ch02
+- file: ja/ch03
+- file: ja/ch04
+- file: ja/ch05
+- file: ja/ch06
+- file: ja/ch07
+- file: ja/ch08
+- file: ja/ch09
+- file: ja/ch10
+- file: ja/prepare
+- file: ja/about
