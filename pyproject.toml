@@ -1,0 +1,22 @@
+[project]
+name = "nlp100"
+version = "0.1.0"
+description = "NLP100"
+readme = "README.md"
+requires-python = ">=3.11.12"
+dependencies = [
+    "ginza>=5.2.0",
+    "ja-ginza>=5.2.0",
+    "mecab-python3>=1.0.10",
+    "numpy>=2.2.5",
+    "pandas>=2.2.3",
+    "requests>=2.32.3",
+    "scikit-learn>=1.6.1",
+    "unidic-lite>=1.0.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit>=4.2.0",
+    "ruff>=0.11.8",
+]
