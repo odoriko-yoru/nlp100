@@ -5,7 +5,7 @@
 1. Install dependency by uv
 
 ```bash
-uv sync
+uv venv
 uv pip install -r pyproject.toml --all-extras
 ```
 
