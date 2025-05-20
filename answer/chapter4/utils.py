@@ -1,30 +1,36 @@
-"""Loading method of json.gz file."""
+"""Remvoe Wiki markup."""
 
-from typing import Union, List
-from pathlib import Path
-import gzip
-import json
+import re
 
 
-def read_jsonlines_gz(file_path: Union[str, Path]) -> List[str]:
-    """Read a gzipped JSON lines file.
+def remove_markup(text) -> str:
+    """Remove Wiki markup.
 
     Parameters
     ----------
-    file_path : Union[str, Path]
-        Path to the gzipped JSON linnes file.
+    text : _type_
+        Inputted raw text
 
     Returns
     -------
     str
-        The text of the article.
+        Processed text
     """
-    text = []
-    with gzip.open(file_path, "rt", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:  # 空行をスキップ
-                article = json.loads(line)
-                text.append(article.get("text"))
-
+    # | の除去
+    text = re.sub(r"\|\s?", "", text)
+    # indentの除去
+    text = re.sub(r"\*+\s?", "", text)
+    # 強調マークアップの除去
+    text = re.sub(r"\'{2,5}", "", text)
+    text = re.sub(r"^(\:|\;)", "", text)
+    text = re.sub(r"^\*{2,5}", "", text)
+    text = re.sub(r"=+\s?(.*?)\s?=+", r"\1", text)
+    # 内部リンクの除去
+    text = re.sub(r"\[\[(?:[^|\]]*?\|)??([^|\]]+?)\]\]", r"\1", text)
+    # 外部リンクの除去
+    text = re.sub(r"\[http://[^\]]+\]", "", text)
+    # HTMLタグの除去
+    text = re.sub(r"<[^>]+>", "", text)
+    # テンプレートの除去
+    text = re.sub(r"\{\{.*?\}\}", "", text)
     return text
