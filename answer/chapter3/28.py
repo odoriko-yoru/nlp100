@@ -25,12 +25,12 @@ def rm_mediawiki_markup(text: str) -> str:
     str
         Text removed markup.
     """
-    p0 = re.compile("'+")  # 強調 -> '''aaa'''
-    p1 = re.compile("\[\[(.*?)(?:\|.*?)?\]\]")  # [[aaa]]
-    p2 = re.compile("\[\[(.+\||)(.+?)\]\]")  # [[aaa|bbb]], # [[aaa#xxx|bbb]]
-    p3 = re.compile("\{\{(.+\||)(.+?)\}\}")  # {{aaa|bbb}}, # {{aaa#xxx|bbb}}
-    p4 = re.compile("<\s*?/*?\s*?br\s*?/*?\s*>")  # <br>, <br />
-    p5 = re.compile("<\s*?/*?\s*?ref\s*?(.*?)/*?\s*>")  # <ref>, <ref name="aaa" />
+    p0 = re.compile(r"'+")  # 強調 -> '''aaa'''
+    p1 = re.compile(r"\[\[(.*?)(?:\|.*?)?\]\]")  # [[aaa]]
+    p2 = re.compile(r"\[\[(.+\||)(.+?)\]\]")  # [[aaa|bbb]], # [[aaa#xxx|bbb]]
+    p3 = re.compile(r"\{\{(.+\||)(.+?)\}\}")  # {{aaa|bbb}}, # {{aaa#xxx|bbb}}
+    p4 = re.compile(r"<\s*?/*?\s*?br\s*?/*?\s*>")  # <br>, <br />
+    p5 = re.compile(r"<\s*?/*?\s*?ref\s*?(.*?)/*?\s*>")  # <ref>, <ref name="aaa" />
 
     text = p0.sub("", text)
     text = p1.sub(r"\1", text)
@@ -43,7 +43,7 @@ def rm_mediawiki_markup(text: str) -> str:
 
 
 # 基礎情報
-p = re.compile("\|(.+?)\s=\s*(.+)")
+p = re.compile(r"\|(.+?)\s=\s*(.+)")
 
 # # json
 uk_json = json.loads(read_uk_jsonlines_gz(filepath))
