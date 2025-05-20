@@ -57,7 +57,8 @@ def analyze_word_frequency(file: Union[str, Path]) -> None:
 
 
 if __name__ == "__main__":
-    path = os.environ.get("DATA_DIR")
+    path = os.environ.get("DATA_DIR", "")
+    path = Path(path)
     filename = Path("jawiki-country.json.gz")
 
     filepath = path / filename
