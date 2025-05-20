@@ -1,5 +1,6 @@
 """Frequency of words."""
 
+from typing import Union
 import os
 from pathlib import Path
 import json
@@ -7,12 +8,6 @@ import gzip
 import re
 import MeCab
 from collections import Counter
-
-
-path = os.environ.get("DATA_DIR")
-filename = Path("jawiki-country.json.gz")
-
-filepath = path / filename
 
 
 def remove_markup(text):
@@ -36,7 +31,7 @@ def remove_markup(text):
     return text
 
 
-def analyze_word_frequency():
+def analyze_word_frequency(file: Union[str, Path]) -> None:
     # MeCabの初期化
     mecab = MeCab.Tagger("-Owakati")
 
@@ -44,7 +39,7 @@ def analyze_word_frequency():
     word_counter = Counter()
 
     # gzipファイルを読み込む
-    with gzip.open(filepath, "rt", encoding="utf-8") as f:
+    with gzip.open(file, "rt", encoding="utf-8") as f:
         for line in f:
             article = json.loads(line)
             text = article["text"]
@@ -62,4 +57,9 @@ def analyze_word_frequency():
 
 
 if __name__ == "__main__":
-    analyze_word_frequency()
+    path = os.environ.get("DATA_DIR")
+    filename = Path("jawiki-country.json.gz")
+
+    filepath = path / filename
+
+    analyze_word_frequency(filepath)
