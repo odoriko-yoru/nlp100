@@ -19,7 +19,7 @@ filepath = path / filename
 # *{{lang|gd|An Rìoghachd Aonaichte na Breatainn Mhòr agus Eirinn mu Thuath}}（[[スコットランド・ゲール語]]）
 # |xxx = bbb
 # }}
-pattern = re.compile("\|(.+?)\s=\s*(.+)")
+pattern = re.compile(r"\|(.+?)\s=\s*(.+)")
 
 # json
 uk_json = json.loads(read_uk_jsonlines_gz(filepath))
