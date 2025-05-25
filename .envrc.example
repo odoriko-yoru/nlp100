@@ -1,2 +1,5 @@
 # dataディレクトリへのパスを取得する環境変数
 export DATA_DIR=$(pwd)/data
+
+# LLM API key
+export ANTHROPIC_API_KEY='your-api-key'
