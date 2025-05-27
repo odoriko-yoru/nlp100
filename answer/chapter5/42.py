@@ -7,7 +7,6 @@ from pathlib import Path
 import anthropic
 import csv
 
-import pdb
 
 path = os.environ.get("DATA_DIR", "")
 path = Path(path).parent
