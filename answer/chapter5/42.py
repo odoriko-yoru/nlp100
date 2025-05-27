@@ -1,12 +1,12 @@
 """多肢選択問題の正解率."""
 
-import os
-from typing import Union
-from tqdm import tqdm
-from pathlib import Path
-import anthropic
 import csv
+import os
+from pathlib import Path
+from typing import Union
 
+import anthropic
+from tqdm import tqdm
 
 path = os.environ.get("DATA_DIR", "")
 path = Path(path).parent
@@ -83,7 +83,7 @@ dataset = load_jmmlu_csv(filepath)
 
 correct = 0
 
-for i, problem in enumerate(tqdm(dataset)):
+for problem in tqdm(dataset):
     prompt = create_prompt_from_dict(problem)
     gt = problem["answer"]
     message = client.messages.create(
