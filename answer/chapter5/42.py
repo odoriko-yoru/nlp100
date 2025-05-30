@@ -92,7 +92,7 @@ for problem in tqdm(dataset):
         temperature=temperature,
         messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
     )
-    ans = message.content[0].text
+    ans = message.content[0].text  # type: ignore
     correct += gt == ans
 
 print(f"正解率 : {correct / len(dataset) * 100:.4f}%")

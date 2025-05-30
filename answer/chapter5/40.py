@@ -26,4 +26,4 @@ message = client.messages.create(
 )
 
 # 回答を出力
-print(message.content[0].text)
+print(message.content[0].text)  # type: ignore
