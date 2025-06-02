@@ -1,4 +1,4 @@
-"""類似度の高い単語10件."""
+"""加法構成性によるアナロジー."""
 
 import os
 from pathlib import Path
