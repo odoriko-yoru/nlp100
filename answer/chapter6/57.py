@@ -52,6 +52,8 @@ for i, name in enumerate(countries):
     ax.annotate(name, (reduced_coor[i, 0], reduced_coor[i, 1]), xytext=(5, 5), textcoords="offset points")
 
 # 保存
+plt.title("k-means clustering")
+plt.tight_layout()
 fig.savefig("k-means-countries.jpg")
 plt.clf()
 plt.close()
