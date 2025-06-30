@@ -29,3 +29,7 @@ for key, idx in wv_from_bin.key_to_index.items():
     idx_to_key[idx] = key
     key_to_idx[key] = idx
     E[idx, :] = wv_from_bin[key]
+
+# 最初の例を確認
+print(f"idx_to_key[1]:\n{idx_to_key[1]}")
+print(f"The shape of the embedding matrix: {E.shape}")

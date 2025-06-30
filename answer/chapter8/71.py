@@ -62,6 +62,9 @@ def convert_to_token(row: pd.Series, key_to_idx: dict) -> pd.Series:
 train_df[["token_dict", "len_of_token"]] = train_df.apply(convert_to_token, args=(key_to_idx,), axis=1)
 val_df[["token_dict", "len_of_token"]] = val_df.apply(convert_to_token, args=(key_to_idx,), axis=1)
 
-# token数が0の行を除いた辞書オブジェクト
+# token数が0の行を除いた辞書オブジェクトの抽出
 train_data = train_df.query("len_of_token != 0")["token_dict"]
 val_data = val_df.query("len_of_token != 0")["token_dict"]
+
+# 最初の例を確認
+print(train_data[0])
