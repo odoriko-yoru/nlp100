@@ -19,7 +19,10 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from gensim.models import KeyedVectors
+from torch import optim
+from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
+from tqdm import tqdm
 
 # 環境変数の読み込み
 DATA_DIR = os.environ.get("DATA_DIR", "")
@@ -182,7 +185,127 @@ def get_vocabulary(sentence: List[str]) -> Set[str]:
     return result
 
 
-def main() -> None:
+def train(
+    model: SemanticClassifier,
+    trainloader: DataLoader,
+    devloader: DataLoader,
+    optimizer: optim.Adam,
+    criterion: nn.BCELoss,
+    epoch: int,
+    epochs: int,
+    device: Union[str, torch.device] = "cpu",
+) -> None:
+    """
+    Train the model.
+
+    Parameters
+    ----------
+    model : SemanticClassifier
+        Model to train.
+    trainloader : DataLoader
+        DataLoader for training.
+    optimizer : optim.Adam
+        Optimizer for training.
+    criterion : nn.BCELoss
+        Loss function for training.
+    epoch : int
+        Current epoch.
+    epochs : int
+        Total number of epochs.
+    device : Union[str, torch.device], optional
+        Device to use for training.
+    """
+    model.train()
+    total_loss = 0.0
+    num_batches = 0
+
+    with tqdm(trainloader, desc=f"Epoch {epoch + 1}/{epochs}") as t:
+        for mean_embedding, label in t:
+            mean_embedding = mean_embedding.to(device)
+            label = label.to(device).to(torch.float32)
+            optimizer.zero_grad()
+
+            # 推論
+            pred = model(mean_embedding)
+            # BCELoss用にラベルの形状を調整
+            label = label.unsqueeze(1)
+            loss = criterion(pred, label)
+
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+            num_batches += 1
+            t.set_postfix(train_loss=f"{loss.item():.4f}")
+
+        # dev datasetでの評価
+        avg_train_loss = total_loss / num_batches if num_batches > 0 else 0.0
+        dev_loss, dev_accuracy = evaluate(model, devloader, criterion, device)
+        t.set_postfix(train_loss=f"{avg_train_loss:.4f}", dev_loss=f"{dev_loss:.4f}", dev_acc=f"{dev_accuracy:.4f}")
+
+    # エポック終了時の詳細表示
+    print(f"\nEpoch {epoch + 1}/{epochs} Summary:")
+    print(f"  Train Loss: {avg_train_loss:.4f}")
+    print(f"  Dev Loss: {dev_loss:.4f}")
+    print(f"  Dev Accuracy: {dev_accuracy:.4f} ({dev_accuracy * 100:.2f}%)")
+
+
+def evaluate(
+    model: SemanticClassifier,
+    devloader: DataLoader,
+    criterion: nn.BCELoss,
+    device: Union[str, torch.device] = "cpu",
+) -> Tuple[float, float]:
+    """
+    Evaluate the model on dev dataset.
+
+    Parameters
+    ----------
+    model : SemanticClassifier
+        Model to evaluate.
+    devloader : DataLoader
+        DataLoader for evaluation.
+    criterion : nn.BCELoss
+        Loss function for evaluation.
+    device : Union[str, torch.device], optional
+        Device to use for evaluation.
+
+    Returns
+    -------
+    Tuple[float, float]
+        Average loss and accuracy on dev dataset.
+    """
+    model.eval()
+    total_loss = 0.0
+    correct = 0
+    total = 0
+    num_batches = 0
+
+    with torch.no_grad():
+        for mean_embedding, label in devloader:
+            mean_embedding = mean_embedding.to(device)
+            label = label.to(device).to(torch.float32)
+
+            pred = model(mean_embedding)
+            # BCELoss用にラベルの形状を調整
+            label_reshaped = label.unsqueeze(1)
+            loss = criterion(pred, label_reshaped)
+
+            # 正答率の計算
+            pred_binary = (pred.squeeze() >= 0.5).float()
+            correct += (pred_binary == label).sum().item()
+            total += label.size(0)
+
+            total_loss += loss.item()
+            num_batches += 1
+
+    avg_loss = total_loss / num_batches if num_batches > 0 else 0.0
+    accuracy = correct / total if total > 0 else 0.0
+
+    return avg_loss, accuracy
+
+
+def main(args) -> None:
     data_dir = Path(DATA_DIR)
 
     # 1. Datasetの読み込み
@@ -198,12 +321,50 @@ def main() -> None:
         data_dir / "GoogleNews-vectors-negative300.bin.gz", vocabulary
     )
 
+    # 4. Datasetの前処理(token->idに変換)
     train_data = convert_to_token(train_df, key_to_idx)
     dev_data = convert_to_token(dev_df, key_to_idx)
 
-    train = SSTDataset(train_data, embedding_matrix)
-    dev = SSTDataset(dev_data, embedding_matrix)
+    train_dataset = SSTDataset(train_data, embedding_matrix)
+    dev_dataset = SSTDataset(dev_data, embedding_matrix)
+
+    if args.dryrun:
+        print("dryrun. only 1 epoch.")
+        epochs = 1
+    else:
+        epochs = args.epochs
+
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    dev_loader = DataLoader(dev_dataset, batch_size=args.batch_size, shuffle=False)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = SemanticClassifier(in_dimension=embedding_matrix.size(1), n_classes=2, device=device)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    criterion = torch.nn.BCELoss()
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+
+    for epoch in range(epochs):
+        train(
+            model=model,
+            trainloader=train_loader,
+            devloader=dev_loader,
+            optimizer=optimizer,
+            criterion=criterion,
+            epoch=epoch,
+            epochs=epochs,
+            device=device,
+        )
+        scheduler.step()
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-s", "--seed", type=int, default=17)
+    parser.add_argument("-e", "--epochs", default=10, type=int)
+    parser.add_argument("-b", "--batch_size", default=1, type=int)
+    parser.add_argument("-p", "--postfix", type=str)
+    parser.add_argument("--dryrun", action="store_true")
+    args = parser.parse_args()
+    main(args)
