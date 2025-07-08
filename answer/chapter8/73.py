@@ -1,5 +1,8 @@
 """モデルの学習.
 
+
+CPU上で学習を行う。
+
 1. Dataset(SST-2, train/dev)の読み込み
 2. Datasetに含まれる語彙の取得
 3. 単語埋め込み行列, key-index辞書の作成
@@ -7,6 +10,7 @@
 """
 
 import os
+import random
 from pathlib import Path
 from typing import Any
 from typing import Dict
@@ -15,6 +19,7 @@ from typing import Set
 from typing import Tuple
 from typing import Union
 
+import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -64,7 +69,22 @@ class SemanticClassifier(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.sigmoid(self.linear1(x))
+        return self.sigmoid(self.linear1(x)).squeeze(1)
+
+
+def fix_seeds(seed: int) -> None:
+    """Fix seeds, Pytorch, random, numpy.
+
+    Parameters
+    ----------
+    seed : int
+        Number of a seed.
+    """
+    random.seed(seed)
+    np.random.RandomState(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
 
 
 def create_embedding_matrix(
@@ -94,14 +114,14 @@ def create_embedding_matrix(
     # "<PAD>"は予約語
     key_to_idx = {"<PAD>": 0}
 
-    # 埋め込み行列
+    # 単語埋め込み行列の取得
     # 最初の行は<PAD>用
     _, d_emb = wv_from_bin.vectors.shape
     E = [torch.zeros(d_emb, dtype=torch.float32)]
 
-    # 単語ごとに処理
+    # 単語が学習済み単語ベクトルに含まれているときのみ、ベクトルを取得する
     for word in vocabulary:
-        if word in wv_from_bin.key_to_index:  # type(wv_from_bin.key_to_index) -> dict ... {word: index}
+        if word in wv_from_bin.key_to_index:
             key_to_idx[word] = len(key_to_idx)
             E.append(torch.tensor(wv_from_bin[word]))
 
@@ -227,8 +247,6 @@ def train(
 
             # 推論
             pred = model(mean_embedding)
-            # BCELoss用にラベルの形状を調整
-            label = label.unsqueeze(1)
             loss = criterion(pred, label)
 
             loss.backward()
@@ -287,9 +305,7 @@ def evaluate(
             label = label.to(device).to(torch.float32)
 
             pred = model(mean_embedding)
-            # BCELoss用にラベルの形状を調整
-            label_reshaped = label.unsqueeze(1)
-            loss = criterion(pred, label_reshaped)
+            loss = criterion(pred, label)
 
             # 正答率の計算
             pred_binary = (pred.squeeze() >= 0.5).float()
@@ -306,6 +322,7 @@ def evaluate(
 
 
 def main(args) -> None:
+    fix_seeds(args.seed)
     data_dir = Path(DATA_DIR)
 
     # 1. Datasetの読み込み
@@ -334,14 +351,15 @@ def main(args) -> None:
     else:
         epochs = args.epochs
 
+    # 5. DataLoaderの作成
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     dev_loader = DataLoader(dev_dataset, batch_size=args.batch_size, shuffle=False)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # 6. 学習
+    device = torch.device("cpu")  # 本問題ではCPU上で学習する
     model = SemanticClassifier(in_dimension=embedding_matrix.size(1), n_classes=2, device=device)
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.01)
     criterion = torch.nn.BCELoss()
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
 
     for epoch in range(epochs):
         train(
@@ -354,16 +372,17 @@ def main(args) -> None:
             epochs=epochs,
             device=device,
         )
-        scheduler.step()
+
+    torch.save(model.state_dict(), "73_model.pth")
 
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--seed", type=int, default=17)
-    parser.add_argument("-e", "--epochs", default=10, type=int)
-    parser.add_argument("-b", "--batch_size", default=1, type=int)
+    parser.add_argument("-s", "--seed", type=int, default=29)
+    parser.add_argument("-e", "--epochs", default=100, type=int)
+    parser.add_argument("-b", "--batch_size", default=32, type=int)
     parser.add_argument("-p", "--postfix", type=str)
     parser.add_argument("--dryrun", action="store_true")
     args = parser.parse_args()
