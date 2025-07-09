@@ -222,8 +222,7 @@ def train(
     epochs: int,
     device: Union[str, torch.device] = "cpu",
 ) -> None:
-    """
-    Train the model.
+    """Train the model.
 
     Parameters
     ----------
@@ -290,8 +289,7 @@ def evaluate(
     criterion: nn.BCELoss,
     device: Union[str, torch.device] = "cpu",
 ) -> Tuple[float, float]:
-    """
-    Evaluate the model on dev dataset.
+    """Evaluate the model on dev dataset.
 
     Parameters
     ----------
