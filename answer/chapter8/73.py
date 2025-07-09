@@ -1,12 +1,19 @@
 """モデルの学習.
 
-
 CPU上で学習を行う。
 
 1. Dataset(SST-2, train/dev)の読み込み
 2. Datasetに含まれる語彙の取得
 3. 単語埋め込み行列, key-index辞書の作成
 4. Datasetの前処理(token->idに変換)
+5. DataLoaderの作成
+6. 学習
+
+===================================
+Reference
+1. Optimizerの解説記事
+【決定版】スーパーわかりやすい最適化アルゴリズム -損失関数からAdamとニュートン法-
+https://qiita.com/omiita/items/1735c1d048fe5f611f80
 """
 
 import os
@@ -119,7 +126,7 @@ def create_embedding_matrix(
     _, d_emb = wv_from_bin.vectors.shape
     E = [torch.zeros(d_emb, dtype=torch.float32)]
 
-    # 単語が学習済み単語ベクトルに含まれているときのみ、ベクトルを取得する
+    # 単語が学習済み単語ベクトルに含まれているときのみ、ベクトルを取得
     for word in vocabulary:
         if word in wv_from_bin.key_to_index:
             key_to_idx[word] = len(key_to_idx)
@@ -243,15 +250,24 @@ def train(
         for mean_embedding, label in t:
             mean_embedding = mean_embedding.to(device)
             label = label.to(device).to(torch.float32)
+
+            # optimizerの初期化
             optimizer.zero_grad()
 
             # 推論
             pred = model(mean_embedding)
+
+            # 損失値の算出
             loss = criterion(pred, label)
 
+            # 損失値を基にした勾配の計算
+            # model.linear1.weight.gradに勾配が格納
             loss.backward()
+
+            # 勾配を基にAdamアルゴリズムを用いて重み更新
             optimizer.step()
 
+            # 損失値の記録
             total_loss += loss.item()
             num_batches += 1
             t.set_postfix(train_loss=f"{loss.item():.4f}")
@@ -307,7 +323,6 @@ def evaluate(
             pred = model(mean_embedding)
             loss = criterion(pred, label)
 
-            # 正答率の計算
             pred_binary = (pred.squeeze() >= 0.5).float()
             correct += (pred_binary == label).sum().item()
             total += label.size(0)
@@ -373,6 +388,7 @@ def main(args) -> None:
             device=device,
         )
 
+    # 学習済モデルの保存
     torch.save(model.state_dict(), "73_model.pth")
 
 
