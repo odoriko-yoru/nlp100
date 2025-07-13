@@ -191,6 +191,77 @@ def get_vocabulary(sentence: List[str]) -> Set[str]:
     return result
 
 
+def padding(tensor: torch.Tensor, target_len: int, pad_value: int = 0) -> torch.Tensor:
+    """Padding tensor.
+
+    Parameters
+    ----------
+    tensor : torch.Tensor
+        Inputted tensor.
+    target_len : int
+        Target length.
+    pad_value : int, optional
+        Constant value, by default 0
+
+    Returns
+    -------
+    torch.Tensor
+        Padded tensor.
+    """
+    # inputされたtensorのサイズ
+    current_len = tensor.size(0)
+
+    # paddingする要素数
+    pad_size = target_len - current_len
+
+    dtype = tensor.dtype
+    device = tensor.device
+
+    # 乱数配列の取得
+    result = torch.empty(target_len, dtype=dtype, device=device)
+
+    # inputしたtensorの代入
+    result[:current_len] = tensor
+
+    # padding
+    if pad_size > 0:
+        result[current_len:] = pad_value
+
+    return result
+
+
+def collate(batch: List[Dict[str, torch.Tensor]], pad_value: int = 0) -> Dict[str, torch.Tensor]:
+    """Collate for padding tensors.
+
+    Preprocessing for mini-batches taken from the dataset.
+
+    Parameters
+    ----------
+    batch : List[Dict[str, torch.Tensor]]
+        Inputted batch.
+    pad_value : int, optional
+        Constant value, by default 0
+
+    Returns
+    -------
+    Dict[str, torch.Tensor]
+    """
+    # input_idsの要素数でbatch内のitemを降順sort
+    lengths = [len(item["input_ids"]) for item in batch]
+    sorted_indices = sorted(range(len(batch)), key=lambda x: lengths[x], reverse=True)
+    sorted_batch = [batch[i] for i in sorted_indices]
+
+    # padding
+    max_length = max(lengths)
+    padded_input_ids = torch.stack([padding(item["input_ids"], max_length, pad_value) for item in sorted_batch])
+    labels = torch.stack([item["label"] for item in sorted_batch])
+
+    return {
+        "input_ids": padded_input_ids,
+        "label": labels,
+    }
+
+
 def train(
     model: SemanticClassifier,
     trainloader: DataLoader,
@@ -324,77 +395,6 @@ def evaluate(
     return avg_loss, accuracy
 
 
-def padding(tensor: torch.Tensor, target_len: int, pad_value: int = 0) -> torch.Tensor:
-    """Padding tensor.
-
-    Parameters
-    ----------
-    tensor : torch.Tensor
-        Inputted tensor.
-    target_len : int
-        Target length.
-    pad_value : int, optional
-        Constant value, by default 0
-
-    Returns
-    -------
-    torch.Tensor
-        Padded tensor.
-    """
-    # inputされたtensorのサイズ
-    current_len = tensor.size(0)
-
-    # paddingする要素数
-    pad_size = target_len - current_len
-
-    dtype = tensor.dtype
-    device = tensor.device
-
-    # 乱数配列の取得
-    result = torch.empty(target_len, dtype=dtype, device=device)
-
-    # inputしたtensorの代入
-    result[:current_len] = tensor
-
-    # padding
-    if pad_size > 0:
-        result[current_len:] = pad_value
-
-    return result
-
-
-def collate(batch: List[Dict[str, torch.Tensor]], pad_value: int = 0) -> Dict[str, torch.Tensor]:
-    """Collate for padding tensors.
-
-    Preprocessing for mini-batches taken from the dataset.
-
-    Parameters
-    ----------
-    batch : List[Dict[str, torch.Tensor]]
-        Inputted batch.
-    pad_value : int, optional
-        Constant value, by default 0
-
-    Returns
-    -------
-    Dict[str, torch.Tensor]
-    """
-    # input_idsの要素数でbatch内のitemを降順sort
-    lengths = [len(item["input_ids"]) for item in batch]
-    sorted_indices = sorted(range(len(batch)), key=lambda x: lengths[x], reverse=True)
-    sorted_batch = [batch[i] for i in sorted_indices]
-
-    # padding
-    max_length = max(lengths)
-    padded_input_ids = torch.stack([padding(item["input_ids"], max_length, pad_value) for item in sorted_batch])
-    labels = torch.stack([item["label"] for item in sorted_batch])
-
-    return {
-        "input_ids": padded_input_ids,
-        "label": labels,
-    }
-
-
 def main(args) -> None:
     fix_seeds(args.seed)
     data_dir = Path(DATA_DIR)
@@ -450,6 +450,17 @@ def main(args) -> None:
 
     # 学習済モデルの保存
     torch.save(model.state_dict(), "76_model.pth")
+
+    # 7. 評価
+    accuracy = evaluate(
+        model=model,
+        devloader=dev_loader,
+        embedding_matrix=embedding_matrix,
+        criterion=criterion,
+        device=device,
+    )
+
+    print(f"Dev Dataset Accuracy : {accuracy[1]: .4f}")
 
 
 if __name__ == "__main__":
