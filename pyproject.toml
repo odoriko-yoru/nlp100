@@ -36,9 +36,6 @@ select = ["E", "F", "W", "B", "I"]
 ignore = []
 fixable = ["ALL"]
 
-[tool.ruff.lint.isort]
-force-single-line = true
-
 [tool.ruff.lint.mccabe]
 max-complexity = 5
 
