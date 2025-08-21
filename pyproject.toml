@@ -3,8 +3,10 @@ name = "nlp100"
 version = "0.1.0"
 description = "NLP100"
 readme = "README.md"
-requires-python = ">=3.11.12"
+requires-python = ">=3.11,<3.12"
 dependencies = [
+    "datasets>=4.0.0",
+    "evaluate>=0.4.5",
     "gensim>=4.3.3",
     "ginza>=5.2.0",
     "ja-ginza>=5.2.0",
@@ -16,6 +18,8 @@ dependencies = [
     "scikit-learn>=1.6.1",
     "seaborn>=0.13.2",
     "torch>=2.7.1",
+    "torchmetrics>=1.8.0",
+    "transformers[torch]>=4.54.1",
     "unidic-lite>=1.0.8",
 ]
 
@@ -33,9 +37,6 @@ line-length = 120
 select = ["E", "F", "W", "B", "I"]
 ignore = []
 fixable = ["ALL"]
-
-[tool.ruff.lint.isort]
-force-single-line = true
 
 [tool.ruff.lint.mccabe]
 max-complexity = 5
