@@ -9,6 +9,7 @@ dependencies = [
     "evaluate>=0.4.5",
     "gensim>=4.3.3",
     "ginza>=5.2.0",
+    "huggingface-hub[cli]>=0.34.4",
     "ja-ginza>=5.2.0",
     "matplotlib>=3.10.3",
     "mecab-python3>=1.0.10",
