@@ -19,6 +19,9 @@ with torch.no_grad():
     prob = torch.softmax(logits[0, -1, :], dim=-1)
     top10_token = torch.topk(prob, 10)
 
+print("Inputted prompt were translated bellow tokens.")
+print(inputs.input_ids[0].tolist())
+
 prob_top10 = top10_token.values
 idx_top10 = top10_token.indices
 
