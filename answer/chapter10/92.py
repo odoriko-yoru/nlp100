@@ -1,10 +1,9 @@
-"""続きのテキストの予測.
+"""予測されたテキストの確率を計算.
 
 Ref:
 1. https://huggingface.co/docs/transformers/main_classes/text_generation#transformers.GenerationConfig
-2. https://huggingface.co/docs/transformers/v4.53.3/en/main_classes/pipelines#transformers.TextGenerationPipeline
-3. https://huggingface.co/docs/transformers/v4.53.3/en/generation_strategies
-4. https://www.nomuramath.com/kv8wr0mp/
+2. https://huggingface.co/docs/transformers/v4.53.3/en/model_doc/llama#transformers.LlamaForCausalLM
+3. https://www.nomuramath.com/kv8wr0mp/
 """
 
 import torch
