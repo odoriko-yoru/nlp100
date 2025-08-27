@@ -7,6 +7,7 @@ Ref:
 4. https://www.nomuramath.com/kv8wr0mp/
 """
 
+import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 
 # Specify model
@@ -29,42 +30,45 @@ max_new_tokens = 50
 # Basic Decoding method
 # Greedy method
 print("\033[31m" + "Greedy method" + "\033[0m")
-generation_config = GenerationConfig(
-    max_new_tokens=max_new_tokens,
-    pad_token_id=tokenizer.pad_token_id,
-    eos_token_id=tokenizer.eos_token_id,
-    do_sample=False,
-)
-outputs = model.generate(**inputs, generation_config=generation_config)
-greedy_output = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-print(greedy_output[0] + "\n")
+with torch.no_grad():
+    generation_config = GenerationConfig(
+        max_new_tokens=max_new_tokens,
+        pad_token_id=tokenizer.pad_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+        do_sample=False,
+    )
+    outputs = model.generate(**inputs, generation_config=generation_config)
+    greedy_output = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+    print(greedy_output[0] + "\n")
 
 # Beam search
 print("\033[31m" + "BeamSearch (num_beam = 5)" + "\033[0m")
-generation_config = GenerationConfig(
-    max_new_tokens=max_new_tokens,
-    pad_token_id=tokenizer.pad_token_id,
-    eos_token_id=tokenizer.eos_token_id,
-    do_sample=False,
-    num_beams=5,
-)
-outputs = model.generate(**inputs, generation_config=generation_config)
-sampling_output = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-print(sampling_output[0] + "\n")
+with torch.no_grad():
+    generation_config = GenerationConfig(
+        max_new_tokens=max_new_tokens,
+        pad_token_id=tokenizer.pad_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+        do_sample=False,
+        num_beams=5,
+    )
+    outputs = model.generate(**inputs, generation_config=generation_config)
+    sampling_output = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+    print(sampling_output[0] + "\n")
 
 
 # Sampling
 print("\033[31m" + "Multinomial Sampling" + "\033[0m")
 for t in tempratures:
     print(f"Temperature = {t}")
-    generation_config = GenerationConfig(
-        max_new_tokens=max_new_tokens,
-        pad_token_id=tokenizer.pad_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-        do_sample=True,
-        num_beams=1,
-        temperature=t,
-    )
-    outputs = model.generate(**inputs, generation_config=generation_config)
-    sampling_output = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-    print(sampling_output[0] + "\n")
+    with torch.no_grad():
+        generation_config = GenerationConfig(
+            max_new_tokens=max_new_tokens,
+            pad_token_id=tokenizer.pad_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+            do_sample=True,
+            num_beams=1,
+            temperature=t,
+        )
+        outputs = model.generate(**inputs, generation_config=generation_config)
+        sampling_output = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        print(sampling_output[0] + "\n")
