@@ -62,6 +62,7 @@ for i, text in enumerate(texts):
     H = H_i.mean()
 
     # PPL
+    # 底にはネイピア数または2が用いられるが、ここではネイピア数を採用
     ppl = math.e**H
 
     print(f"""Sentence: {text}\nPPL: {ppl: .4f}\n""")
