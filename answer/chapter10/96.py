@@ -84,6 +84,7 @@ for i in tqdm(range(0, len(dev_df), batch_size), total=len(dev_df) / batch_size)
     with torch.no_grad():
         # padding_sideが'right'である旨のWarningが出るが
         # batch_inputの中身を見てleft_sideのpaddingになっていることは確認済み
+        # attention_maskも正しくマスクしていた
         outputs = model.generate(
             batch_input,
             attention_mask=batch_attention_mask,
