@@ -23,6 +23,7 @@ tokenizer.pad_token = tokenizer.eos_token
 model = AutoModelForCausalLM.from_pretrained(
     model_id, device_map="auto" if torch.cuda.is_available() else None, trust_remote_code=True
 )
+model.config.pad_token_id = tokenizer.pad_token_id  # modelにもpadding tokenを設定しないとWarningが出る
 
 # Datasetの読み込み
 data_dir = Path(DATA_DIR)
@@ -82,9 +83,6 @@ for i in tqdm(range(0, len(dev_df), batch_size), total=len(dev_df) / batch_size)
     batch_labels = torch.Tensor(batch_labels).to(device)
 
     with torch.no_grad():
-        # padding_sideが'right'である旨のWarningが出るが
-        # batch_inputの中身を見てleft_sideのpaddingになっていることは確認済み
-        # attention_maskも正しくマスクしていた
         outputs = model.generate(
             batch_input,
             attention_mask=batch_attention_mask,
