@@ -22,6 +22,7 @@ dependencies = [
     "torch>=2.7.1",
     "torchmetrics>=1.8.0",
     "transformers[torch]>=4.54.1",
+    "trl>=0.22.2",
     "unidic-lite>=1.0.8",
 ]
 
