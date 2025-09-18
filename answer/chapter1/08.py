@@ -1,3 +1,6 @@
+"""暗号文."""
+
+
 def cipher(sequence: str) -> str:
     """Replace lowercase letters to '219 - <ASCII's code>'.
 
@@ -13,14 +16,18 @@ def cipher(sequence: str) -> str:
     str
         Ciphered sentence
     """
-    ans = [
-        chr(219 - ord(char)) if 97 <= ord(char) <= 122 else char for char in sequence
-    ]
+    ans = [chr(219 - ord(char)) if 97 <= ord(char) <= 122 else char for char in sequence]
     return "".join(ans)
 
 
-input = "aA0/!"
+def main() -> None:
+    input = "abcABC0/!"
 
-ans = cipher(input)
-print(ans)
-print(cipher(ans))
+    ans = cipher(input)
+    print("入力文: " + input)
+    print("暗号化: " + ans)
+    print("復号化: " + cipher(ans))
+
+
+if __name__ == "__main__":
+    main()
