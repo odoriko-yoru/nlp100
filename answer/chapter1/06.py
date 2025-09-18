@@ -1,3 +1,5 @@
+"""集合."""
+
 x = "paraparaparadise"
 y = "paragraph"
 
@@ -15,5 +17,5 @@ print(f"Intersection of X and Y : {x_set & y_set}")
 # 差集合
 print(f"Difference of X and Y : {x_set - y_set}")
 
-print("Yes" if "se" in x_set else "No")
-print("Yes" if "se" in y_set else "No")
+print("Set X has bi-gram 'se' -> " + ("Yes" if "se" in x_set else "No"))
+print("Set Y has bi-gram 'se' -> " + ("Yes" if "se" in y_set else "No"))
