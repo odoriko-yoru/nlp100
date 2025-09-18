@@ -1,3 +1,6 @@
+"""テンプレートによる文生成."""
+
+
 def gen_sentence(x: str, y: str, z: str) -> str:
     """Generate a sentence from the template and three args.
 
@@ -15,11 +18,16 @@ def gen_sentence(x: str, y: str, z: str) -> str:
     str
         generated sentence
     """
-    return f"{x}のとき{y}は{z}"
+    return f"{x}時の{y}は{z}"
 
 
-x = "12"
-y = "気温"
-z = "22.4"
+def main() -> None:
+    x = "12"
+    y = "気温"
+    z = "22.4"
 
-print(gen_sentence(x, y, z))
+    print(gen_sentence(x, y, z))
+
+
+if __name__ == "__main__":
+    main()
