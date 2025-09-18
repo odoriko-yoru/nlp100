@@ -1,29 +1,35 @@
-from typing import Union
+"""n-gram."""
+
+from typing import List, Union
 
 
-def create_n_gram(n: int, sequence: Union[str, list]) -> list[str]:
+def create_n_gram(n: int, sequence: Union[str, List]) -> Union[list[str], List[List[str]]]:
     """Separate inputted sentence and output a char/word n-gram.
 
     Parameters
     ----------
     n : int
-        Number of gram.
+        Number of gram
 
     sequence : str or list
-        inputted sentence
+        Sentences to split
 
     Returns
     -------
-    tuple[str]
+    Union[list[str], List[List[str]]]
     """
     return [sequence[i : i + n] for i in range(len(sequence) - n + 1)]
 
 
-sentence = "I am an NLPer"
+def main() -> None:
+    sentence = "I am an NLPer"
 
-for i in range(1, 4):
-    # n-gram of the character
-    print(create_n_gram(i, sentence))
+    # tri-gram of characters
+    print(create_n_gram(3, sentence))
 
-    # n-gram of words
-    print(create_n_gram(i, sentence.split()))
+    # bi-gram of words
+    print(create_n_gram(2, sentence.split()))
+
+
+if __name__ == "__main__":
+    main()
