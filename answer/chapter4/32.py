@@ -1,9 +1,8 @@
-"""MeCabを使った形態素解析."""
+"""「AのB」."""
 
 import MeCab
 import unidic_lite
 from mecab_models import MeCabToken
-
 
 # テキストの読み込み
 with open("sample.txt", "rt", encoding="utf-8") as f:
@@ -19,16 +18,10 @@ parsed = mecab.parse(text)
 blocks = parsed.split("\n")
 
 # token化したblockをdataclassに保存する
-tokens = [
-    MeCabToken(block.split("\t")) for block in blocks if block != "EOS" or not block
-]
+tokens = [MeCabToken(block.split("\t")) for block in blocks if block != "EOS" or not block]
 
 for i, t in enumerate(tokens):
-    if (
-        t.surface == "の"
-        and "名詞" == tokens[i - 1].split_pos()[0]
-        and "名詞" == tokens[i + 1].split_pos()[0]
-    ):
+    if t.surface == "の" and "名詞" == tokens[i - 1].split_pos()[0] and "名詞" == tokens[i + 1].split_pos()[0]:
         n1 = tokens[i - 1].surface
         n3 = tokens[i + 1].surface
         print(f"{n1}{t.surface}{n3}")

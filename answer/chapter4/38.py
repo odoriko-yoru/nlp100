@@ -1,16 +1,16 @@
 """TD-IDFの算出."""
 
-from collections import Counter, defaultdict
+import gzip
+import json
 import math
 import os
-import json
-import gzip
+from collections import Counter, defaultdict
 from pathlib import Path
+
 import MeCab
 import unidic_lite
 from mecab_models import MeCabToken
 from utils import remove_markup
-
 
 # TD-IDFの定式化
 # N件の文書からなるコーパスにおいて
@@ -59,11 +59,7 @@ with gzip.open(filepath, "rt", encoding="utf-8") as f:
         blocks = parsed.split("\n")
         blocks = list(filter(lambda x: x != "", blocks))
 
-        tokens = [
-            MeCabToken(block.split("\t"))
-            for block in blocks
-            if block != "EOS" or not block
-        ]
+        tokens = [MeCabToken(block.split("\t")) for block in blocks if block != "EOS" or not block]
 
         # 文書で出現した単語を記録 -> DF(x)の更新のため
         doc_nouns = set()
@@ -91,9 +87,5 @@ for noun, tf in japan_noun_freq.items():
     tfidf[noun] = {"TF": tf, "IDF": idf, "TF-IDF": tf_idf}
 
 # TF-IDFがTOP20の単語を表示
-for noun, score in sorted(tfidf.items(), key=lambda x: x[1]["TF-IDF"], reverse=True)[
-    :20
-]:
-    print(
-        f"{noun}\tTF:{score['TF']}\tIDF:{score['IDF']:.4f}\tTF-IDF:{score['TF-IDF']:.4f}"
-    )
+for noun, score in sorted(tfidf.items(), key=lambda x: x[1]["TF-IDF"], reverse=True)[:20]:
+    print(f"{noun}\tTF:{score['TF']}\tIDF:{score['IDF']:.4f}\tTF-IDF:{score['TF-IDF']:.4f}")

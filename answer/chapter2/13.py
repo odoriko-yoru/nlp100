@@ -1,5 +1,8 @@
+"""タブをスペースに置換."""
+
 import os
 from pathlib import Path
+
 import pandas as pd
 
 path = os.environ.get("DATA_DIR")

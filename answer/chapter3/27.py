@@ -1,22 +1,24 @@
-import re
-import os
+"""内部リンクの除去."""
+
 import json
+import os
+import re
 from pathlib import Path
+
 import pandas as pd
 from utils import read_uk_jsonlines_gz
-
 
 path = os.environ.get("DATA_DIR")
 filename = Path("jawiki-country.json.gz")
 
 filepath = path / filename
 
-p1 = re.compile("\|(.+?)\s=\s*(.+)")
+p1 = re.compile(r"\|(.+?)\s=\s*(.+)")
 
 # [[aaa]]
 # [[aaa|bbb]]
 # [[aaa#xxx|bbb]]
-p2 = re.compile("\[\[(.+\||)(.+?)\]\]")
+p2 = re.compile(r"\[\[(.+\||)(.+?)\]\]")
 
 # json
 uk_json = json.loads(read_uk_jsonlines_gz(filepath))

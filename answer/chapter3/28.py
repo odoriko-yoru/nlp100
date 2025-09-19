@@ -1,15 +1,12 @@
-import re
-import os
+"""MediaWikiマークアップの除去."""
+
 import json
+import os
+import re
 from pathlib import Path
+
 import pandas as pd
 from utils import read_uk_jsonlines_gz
-
-
-path = os.environ.get("DATA_DIR")
-filename = Path("jawiki-country.json.gz")
-
-filepath = path / filename
 
 
 def rm_mediawiki_markup(text: str) -> str:
@@ -42,28 +39,38 @@ def rm_mediawiki_markup(text: str) -> str:
     return text
 
 
-# 基礎情報
-p = re.compile(r"\|(.+?)\s=\s*(.+)")
+def main() -> None:
+    path = os.environ.get("DATA_DIR")
+    filename = Path("jawiki-country.json.gz")
 
-# # json
-uk_json = json.loads(read_uk_jsonlines_gz(filepath))
-uk_text = uk_json.get("text").split("\n")
-ans = {}
-for line in uk_text:
-    r = re.search(p, line)
-    if r:
-        stripped = rm_mediawiki_markup(r[2])
-        ans[r[1]] = stripped
-print(ans)
+    filepath = path / filename
 
-# pandas
-df = pd.read_json(filepath, lines=True)
-uk_df = df.query('title=="イギリス"')
-uk_text = uk_df["text"].values[0].split("\n")
-ans = {}
-for line in uk_text:
-    r = re.search(p, line)
-    if r:
-        stripped = rm_mediawiki_markup(r[2])
-        ans[r[1]] = stripped
-print(ans)
+    # 基礎情報
+    p = re.compile(r"\|(.+?)\s=\s*(.+)")
+
+    # # json
+    uk_json = json.loads(read_uk_jsonlines_gz(filepath))
+    uk_text = uk_json.get("text").split("\n")
+    ans = {}
+    for line in uk_text:
+        r = re.search(p, line)
+        if r:
+            stripped = rm_mediawiki_markup(r[2])
+            ans[r[1]] = stripped
+    print(ans)
+
+    # pandas
+    df = pd.read_json(filepath, lines=True)
+    uk_df = df.query('title=="イギリス"')
+    uk_text = uk_df["text"].values[0].split("\n")
+    ans = {}
+    for line in uk_text:
+        r = re.search(p, line)
+        if r:
+            stripped = rm_mediawiki_markup(r[2])
+            ans[r[1]] = stripped
+    print(ans)
+
+
+if __name__ == "__main__":
+    main()

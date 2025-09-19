@@ -1,10 +1,12 @@
-import re
-import os
+"""ファイル参照の抽出."""
+
 import json
+import os
+import re
 from pathlib import Path
+
 import pandas as pd
 from utils import read_uk_jsonlines_gz
-
 
 path = os.environ.get("DATA_DIR")
 filename = Path("jawiki-country.json.gz")
@@ -15,7 +17,7 @@ filepath = path / filename
 uk_json = json.loads(read_uk_jsonlines_gz(filepath))
 uk_text = uk_json.get("text")
 
-pattern = re.compile("\[\[ファイル:(.*?)\|")
+pattern = re.compile(r"\[\[ファイル:(.*?)\|")
 for i in re.findall(pattern, uk_text):
     print(i)
 

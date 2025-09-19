@@ -1,13 +1,14 @@
-"""Frequency of words."""
+"""単語の出現頻度."""
 
-from typing import Union
-import os
-from pathlib import Path
-import json
 import gzip
+import json
+import os
 import re
-import MeCab
 from collections import Counter
+from pathlib import Path
+from typing import Union
+
+import MeCab
 
 
 def remove_markup(text):

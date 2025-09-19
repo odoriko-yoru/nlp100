@@ -1,4 +1,4 @@
-"""MeCabを使った形態素解析."""
+"""動詞."""
 
 import MeCab
 import unidic_lite

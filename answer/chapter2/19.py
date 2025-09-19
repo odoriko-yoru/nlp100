@@ -1,5 +1,8 @@
+"""3列目の数値の降順に各行を並び替える."""
+
 import os
 from pathlib import Path
+
 import pandas as pd
 
 path = os.environ.get("DATA_DIR")

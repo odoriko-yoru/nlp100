@@ -3,12 +3,7 @@
 import os
 import random
 from pathlib import Path
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Set
-from typing import Tuple
-from typing import Union
+from typing import Any, Dict, List, Set, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -16,8 +11,7 @@ import torch
 import torch.nn as nn
 from gensim.models import KeyedVectors
 from torch import optim
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset
+from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
 # 環境変数の読み込み

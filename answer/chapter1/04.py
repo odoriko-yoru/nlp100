@@ -1,4 +1,9 @@
-sentence = "Hi He Lied Because Boron Could Not Oxidize Fluorine. New Nations Might Also Sign Peace Security Clause. Arthur King Can."
+"""元素記号."""
+
+sentence = """
+Hi He Lied Because Boron Could Not Oxidize Fluorine. New Nations Might Also Sign Peace
+ Security Clause. Arthur King Can.
+"""
 
 table = {
     ".": None,
@@ -10,6 +15,7 @@ num = [1, 5, 6, 7, 8, 9, 15, 16, 19]
 ans = []
 
 for i, word in enumerate(sentence.split()):
+    i += 1
     word = word.translate(word.maketrans(table))
     if i in num:
         ans.append((word[0], i))

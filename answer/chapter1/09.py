@@ -1,9 +1,6 @@
+"""Typoglycemia."""
+
 import random
-
-seed = 2025
-random.seed(seed)
-
-sentence = "I couldn't believe that I could actually understand what I was reading : the phenomenal power of the human mind ."
 
 
 def shuffle_middle_char(word: str) -> str:
@@ -31,5 +28,17 @@ def shuffle_middle_char(word: str) -> str:
         return f"{word[0]}{''.join(middle)}{word[-1]}"
 
 
-sentence = sentence.split()
-print(" ".join([shuffle_middle_char(word) for word in sentence]))
+def main() -> None:
+    seed = 2025
+    random.seed(seed)
+
+    sentence = """
+    I couldn't believe that I could actually understand what I was reading :
+     the phenomenal power of the human mind ."""
+
+    sentence = sentence.split()
+    print(" ".join([shuffle_middle_char(word) for word in sentence]))
+
+
+if __name__ == "__main__":
+    main()

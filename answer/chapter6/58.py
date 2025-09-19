@@ -34,45 +34,50 @@ def plot_dendrogram(model, labels=None, **kwargs):
     dendrogram(linkage_matrix, labels=labels, **kwargs)
 
 
-data_dir = os.environ.get("DATA_DIR", "")
-data_dir = Path(data_dir)
-wv = Path("GoogleNews-vectors-negative300.bin.gz")
+def main() -> None:
+    data_dir = os.environ.get("DATA_DIR", "")
+    data_dir = Path(data_dir)
+    wv = Path("GoogleNews-vectors-negative300.bin.gz")
 
-dataset = data_dir / wv
-model = KeyedVectors.load_word2vec_format(dataset, binary=True)
+    dataset = data_dir / wv
+    model = KeyedVectors.load_word2vec_format(dataset, binary=True)
 
-file = Path("questions-words.txt")
+    file = Path("questions-words.txt")
 
-target_section = ["capital-common-countries", "capital-world"]
+    target_section = ["capital-common-countries", "capital-world"]
 
-df = []
-for target in target_section:
-    df.append(load_analogy_section(data_dir / file, target))
+    df = []
+    for target in target_section:
+        df.append(load_analogy_section(data_dir / file, target))
 
-df = pd.concat(df, axis=0)
+    df = pd.concat(df, axis=0)
 
-# 国名の入った列を抽出
-countries = pd.unique(df["word4"])
+    # 国名の入った列を抽出
+    countries = pd.unique(df["word4"])
 
-X = []
-for i in countries:
-    X.append(model[i])
-X = np.array(X)
+    X = []
+    for i in countries:
+        X.append(model[i])
+    X = np.array(X)
 
-model = AgglomerativeClustering(linkage="ward", distance_threshold=0, n_clusters=None)
-model = model.fit(X)
+    model = AgglomerativeClustering(linkage="ward", distance_threshold=0, n_clusters=None)
+    model = model.fit(X)
 
-# plot
-plt.figure(figsize=(22, 12))
-plt.title("Hierarchical Clustering Dendrogram", fontsize=16)
-# plot the top three levels of the dendrogram
-plot_dendrogram(model, labels=countries, truncate_mode="level")
-plt.xlabel("Country", fontsize=14)
-plt.xticks(rotation=90, ha="right", fontsize=12)
-plt.title("Hierarchical clustering")
-plt.tight_layout()
+    # plot
+    plt.figure(figsize=(22, 12))
+    plt.title("Hierarchical Clustering Dendrogram", fontsize=16)
+    # plot the top three levels of the dendrogram
+    plot_dendrogram(model, labels=countries, truncate_mode="level")
+    plt.xlabel("Country", fontsize=14)
+    plt.xticks(rotation=90, ha="right", fontsize=12)
+    plt.title("Hierarchical clustering")
+    plt.tight_layout()
 
-# 保存
-plt.savefig("hierarchical-clustering-countries.jpg")
-plt.clf()
-plt.close()
+    # 保存
+    plt.savefig("hierarchical-clustering-countries.jpg")
+    plt.clf()
+    plt.close()
+
+
+if __name__ == "__main__":
+    main()
