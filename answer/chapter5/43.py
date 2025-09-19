@@ -8,13 +8,6 @@ from typing import Union
 import anthropic
 from tqdm import tqdm
 
-path = os.environ.get("DATA_DIR", "")
-path = Path(path).parent
-
-csv_file = "JMMLU/JMMLU/college_biology.csv"
-
-filepath = path / csv_file
-
 
 def load_jmmlu_csv(filepath: Union[str, Path]) -> list[dict]:
     """Load the JMMLU QA Dataset.
@@ -71,29 +64,37 @@ def create_prompt_from_dict(problem: dict[str, str]) -> str:
     return prompt
 
 
-client = anthropic.Anthropic()
+def main() -> None:
+    path = os.environ.get("DATA_DIR", "")
+    path = Path(path).parent
 
-# Hyperparameter
-# model = "claude-3-7-sonnet-latest"
-model = "claude-3-5-haiku-latest"
-max_tokens = 1024
-temperature = 1  # temperatureを増加させ、出力に揺らぎを与える
+    csv_file = "JMMLU/JMMLU/college_biology.csv"
 
-dataset = load_jmmlu_csv(filepath)
+    filepath = path / csv_file
 
-correct = 0
+    client = anthropic.Anthropic()
 
-for problem in tqdm(dataset):
-    prompt = create_prompt_from_dict(problem)
-    gt = problem["answer"]
-    message = client.messages.create(
-        model=model,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
-    )
-    ans = message.content[0].text  # type: ignore
-    correct += gt == ans
+    # Hyperparameter
+    # model = "claude-3-7-sonnet-latest"
+    model = "claude-3-5-haiku-latest"
+    max_tokens = 1024
+    temperature = 1  # temperatureを増加させ、出力に揺らぎを与える
 
-print(f"正解率 : {correct / len(dataset) * 100:.4f}%")
-print(f"正解率/問題数 : {correct} / {len(dataset)}")
+    dataset = load_jmmlu_csv(filepath)
+
+    correct = 0
+
+    for problem in tqdm(dataset):
+        prompt = create_prompt_from_dict(problem)
+        gt = problem["answer"]
+        message = client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
+        )
+        ans = message.content[0].text  # type: ignore
+        correct += gt == ans
+
+    print(f"正解率 : {correct / len(dataset) * 100:.4f}%")
+    print(f"正解率/問題数 : {correct} / {len(dataset)}")
