@@ -1,4 +1,4 @@
-"""係り受け解析."""
+"""係り受け木."""
 
 import spacy
 from spacy import displacy

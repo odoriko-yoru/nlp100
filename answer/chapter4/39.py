@@ -1,17 +1,17 @@
-"""Zipf's lawの可視化."""
+"""Zipfの法則."""
 
-from collections import Counter
-import os
-import json
 import gzip
-import numpy as np
+import json
+import os
+from collections import Counter
 from pathlib import Path
-import MeCab
-import unidic_lite
-from mecab_models import MeCabToken
-from matplotlib import pyplot as plt
-from utils import remove_markup
 
+import MeCab
+import numpy as np
+import unidic_lite
+from matplotlib import pyplot as plt
+from mecab_models import MeCabToken
+from utils import remove_markup
 
 path = os.environ.get("DATA_DIR", "")
 path = Path(path)
@@ -39,11 +39,7 @@ with gzip.open(filepath, "rt", encoding="utf-8") as f:
         blocks = parsed.split("\n")
         blocks = list(filter(lambda x: x != "", blocks))
 
-        tokens = [
-            MeCabToken(block.split("\t"))
-            for block in blocks
-            if block != "EOS" or not block
-        ]
+        tokens = [MeCabToken(block.split("\t")) for block in blocks if block != "EOS" or not block]
 
         for t in tokens:
             if t.split_pos()[0] == "名詞":
