@@ -1,9 +1,9 @@
 """Wikipedia記事の「イギリス」に関するJSONファイルを読み込む."""
 
-from typing import Union
-from pathlib import Path
 import gzip
 import json
+from pathlib import Path
+from typing import Union
 
 
 def read_uk_jsonlines_gz(file_path: Union[str, Path]) -> str:
