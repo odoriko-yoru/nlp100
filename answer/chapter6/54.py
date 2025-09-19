@@ -8,15 +8,6 @@ from gensim.models import KeyedVectors
 from tqdm import tqdm
 from utils import load_analogy_section
 
-data_dir = os.environ.get("DATA_DIR", "")
-data_dir = Path(data_dir)
-wv = Path("GoogleNews-vectors-negative300.bin.gz")
-
-dataset = data_dir / wv
-model = KeyedVectors.load_word2vec_format(dataset, binary=True)
-
-file = Path("questions-words.txt")
-
 
 def calc_similarity(row: pd.Series, model: KeyedVectors) -> tuple[str, float]:
     """Calculate cosine similarity and return a most similar word and similarity.
@@ -37,21 +28,35 @@ def calc_similarity(row: pd.Series, model: KeyedVectors) -> tuple[str, float]:
     return most_similar_key, similarity
 
 
-tqdm.pandas()
+def main() -> None:
+    data_dir = os.environ.get("DATA_DIR", "")
+    data_dir = Path(data_dir)
+    wv = Path("GoogleNews-vectors-negative300.bin.gz")
 
-# load text file
-target_section = "capital-common-countries"
-df_capital = load_analogy_section(data_dir / file, target_section)
+    dataset = data_dir / wv
+    model = KeyedVectors.load_word2vec_format(dataset, binary=True)
 
-# calc simitarity and a extract most similar word
-df_capital[["most_similar_word", "similarity"]] = df_capital.progress_apply(
-    calc_similarity, axis=1, args=(model,), result_type="expand"
-)  # type: ignore
+    file = Path("questions-words.txt")
 
-# save
-df_capital.to_csv(
-    "capital_common_countries.csv",
-    sep=" ",
-    index=False,
-    header=False,
-)
+    tqdm.pandas()
+
+    # load text file
+    target_section = "capital-common-countries"
+    df_capital = load_analogy_section(data_dir / file, target_section)
+
+    # calc simitarity and a extract most similar word
+    df_capital[["most_similar_word", "similarity"]] = df_capital.progress_apply(
+        calc_similarity, axis=1, args=(model,), result_type="expand"
+    )  # type: ignore
+
+    # save
+    df_capital.to_csv(
+        "capital_common_countries.csv",
+        sep=" ",
+        index=False,
+        header=False,
+    )
+
+
+if __name__ == "__main__":
+    main()
