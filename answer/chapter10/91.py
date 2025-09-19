@@ -1,6 +1,6 @@
 """続きのテキストの予測.
 
-Ref:
+Refs:
 1. https://huggingface.co/docs/transformers/main_classes/text_generation#transformers.GenerationConfig
 2. https://huggingface.co/docs/transformers/v4.53.3/en/main_classes/pipelines#transformers.TextGenerationPipeline
 3. https://huggingface.co/docs/transformers/v4.53.3/en/generation_strategies
