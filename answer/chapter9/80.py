@@ -1,6 +1,7 @@
 """トークン化.
 
-# https://huggingface.co/answerdotai/ModernBERT-base#usage
+Refs:
+1. https://huggingface.co/answerdotai/ModernBERT-base#usage
 """
 
 from transformers import AutoTokenizer

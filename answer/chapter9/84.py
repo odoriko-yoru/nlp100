@@ -2,8 +2,7 @@
 
 import torch
 from torchmetrics.functional import pairwise_cosine_similarity
-from transformers import AutoModel
-from transformers import AutoTokenizer
+from transformers import AutoModel, AutoTokenizer
 
 model_id = "answerdotai/ModernBERT-base"
 tokenizer = AutoTokenizer.from_pretrained(model_id)

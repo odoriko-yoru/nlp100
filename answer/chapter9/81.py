@@ -1,10 +1,10 @@
 """マスクの予測.
 
-# https://huggingface.co/answerdotai/ModernBERT-base#usage
+Refs:
+1. https://huggingface.co/answerdotai/ModernBERT-base#usage
 """
 
-from transformers import AutoModelForMaskedLM
-from transformers import AutoTokenizer
+from transformers import AutoModelForMaskedLM, AutoTokenizer
 
 model_id = "answerdotai/ModernBERT-base"
 tokenizer = AutoTokenizer.from_pretrained(model_id)
