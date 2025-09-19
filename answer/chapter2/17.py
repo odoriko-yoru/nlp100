@@ -1,5 +1,8 @@
+"""1列目の文字列の異なり."""
+
 import os
 from pathlib import Path
+
 import pandas as pd
 
 path = os.environ.get("DATA_DIR")
