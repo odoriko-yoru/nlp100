@@ -1,17 +1,19 @@
-import re
-import os
+"""強調マークアップの除去."""
+
 import json
+import os
+import re
 from pathlib import Path
+
 import pandas as pd
 from utils import read_uk_jsonlines_gz
-
 
 path = os.environ.get("DATA_DIR")
 filename = Path("jawiki-country.json.gz")
 
 filepath = path / filename
 
-pattern = re.compile("\|(.+?)\s=\s*(.+)")
+pattern = re.compile(r"\|(.+?)\s=\s*(.+)")
 
 # json
 uk_json = json.loads(read_uk_jsonlines_gz(filepath))

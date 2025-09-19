@@ -1,6 +1,9 @@
-import os
+"""カテゴリ名を含む行を抽出."""
+
 import json
+import os
 from pathlib import Path
+
 import pandas as pd
 from utils import read_uk_jsonlines_gz
 

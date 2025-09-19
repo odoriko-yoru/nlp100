@@ -1,8 +1,10 @@
+"""JSONデータの読み込み."""
+
 import os
 from pathlib import Path
+
 import pandas as pd
 from utils import read_uk_jsonlines_gz
-
 
 path = os.environ.get("DATA_DIR")
 filename = Path("jawiki-country.json.gz")
