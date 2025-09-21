@@ -21,6 +21,7 @@ def cipher(sequence: str) -> str:
 
 
 def main() -> None:
+    # test
     input = "abcABC0/!"
 
     ans = cipher(input)
