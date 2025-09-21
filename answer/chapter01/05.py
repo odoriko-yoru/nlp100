@@ -24,10 +24,10 @@ def create_n_gram(n: int, sequence: Union[str, List]) -> Union[list[str], List[L
 def main() -> None:
     sentence = "I am an NLPer"
 
-    # tri-gram of characters
+    # 文字tri-gram
     print(create_n_gram(3, sentence))
 
-    # bi-gram of words
+    # 単語bi-gram
     print(create_n_gram(2, sentence.split()))
 
 
