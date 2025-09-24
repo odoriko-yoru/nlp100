@@ -1,9 +1,27 @@
 # 言語処理100本ノック 2025
 
-このプロジェクトは 尾崎直観先生作-[言語処理100本ノック 2025](https://nlp100.github.io/2025/ja/index.html) の解答例です。  
+このプロジェクトは 尾崎直観先生作成の[言語処理100本ノック 2025](https://nlp100.github.io/2025/ja/index.html) の解答例です。
 プログラミング言語`Python`を利用することを前提としています。
 
-## 環境構築 - Environment Set Up
+
+## 概要
+
+[尾崎直観先生](https://www.chokkan.org/)作「言語処理100本ノック 2025」は、自然言語処理に関わる100の問題がnotebook形式で提供されている問題集です。GitHub上に公開されており、Google ColaboratoryやAWS SageMakerを利用して誰でも取り組むことができます。
+
+問題は以下の10章で構成されており、基礎から最新技術まで段階的に学習できる設計になっています。
+
+1. 準備運動
+1. UNIXコマンド
+1. 正規表現
+1. 言語解析
+1. 大規模言語モデル
+1. 単語ベクトル
+1. 機械学習
+1. ニューラルネット
+1. 事前学習済み言語モデル（BERT型）
+1. 事前学習済み言語モデル（GPT型）
+
+## 環境構築
 
 このリポジトリでPythonスクリプトにて解答を作成しています。
 
@@ -14,7 +32,7 @@
 
 [Astral Software Inc. Package Manager - uv](https://docs.astral.sh/uv/)
 
-（なお、Google Colablatoryで解答を作成する場合は[本家HPの実行環境](https://nlp100.github.io/2025/ja/prepare.html#google-colaboratory)を参照ください。）
+（なお、Google Colaboratoryで解答を作成する場合は[本家HP-実行環境の項](https://nlp100.github.io/2025/ja/prepare.html#google-colaboratory)を参照ください。）
 
 ### 2. リポジトリのクローン/ダウンロード
 
@@ -28,18 +46,18 @@ ssh/zipファイルにてリポジトリをローカル環境にクローン/ダ
 uv sync --extra dev
 ```
 
-適切に仮想環境が作成されれば、`pyproject.toml`, `uv.lock`と同じディレクトリに`.venv`ファイルが作成されます。
+適切に仮想環境が作成されれば、`pyproject.toml`, `uv.lock`と同じディレクトリに`.venv`ディレクトリが作成されます。
 
 >[!WARNING]
 > 1. `uv.lock`ファイルは2025年9月時点の依存関係を記述しています。`transformers`, `peft`といったパッケージはリリースが頻繁に行われているため、APIの更新が行われ、ドキュメントとコードの乖離が生じる可能性があります。
 >
-> 2. また、`mecab-python3`が`numpy`2系に対応していないことから、本プロジェクトも`numpy`1系を採用しています。
+> 2. また、`mecab-python3`が`numpy`2系に対応していないことから、本リポジトリも`numpy`1系を採用しています。
 
 ## APIキー・アクセストークンの管理
 
 5章でLLMの有料APIを発行しますが、**APIキーはPythonスクリプトにハードコーディングしないでください。**
 
-本プロジェクトでは以下の方法でAPIキーを管理しました。
+本リポジトリでは以下の方法でAPIキーを環境変数として管理しました。
 
 ローカル環境
   - `direnv`と`.envrc`
@@ -58,7 +76,7 @@ AWS (GPU利用時)
 > uv run <path to python script>
 ```
 
-仮想環境を明に有効化して、スクリプトを実行する場合は、以下のコマンドを利用します。
+仮想環境を明示的に有効化して、スクリプトを実行する場合は、以下のコマンドを利用します。
 
 ```console
 > . .venv/bin/activate
@@ -74,6 +92,19 @@ AWS (GPU利用時)
 ```
 
 また、`pyproject.toml`の`[tool.ruff]`以降を編集してください。
+
+## GPUの利用
+
+[本家HP-ランタイムの選択](https://nlp100.github.io/2025/ja/prepare.html#id2)に記載のある問題はクラウドGPUサーバ上で実行しました。GPUの利用に慣れる良きチャンスであるため、本リポジトリでも当該問題についてはGPUの利用を推奨します。
+
+## 生成AIによるコード生成・補完
+
+[本家HP-生成AIによるコード生成・補完](https://nlp100.github.io/2025/ja/prepare.html#ai)に記載の通り、本リポジトリでも解答作成時はLLMによるコード補完機能をオフにすることを推奨します。
+
+
+## 改善提案・バグ報告
+
+バグ報告や改善提案は Issue や Pull Request でお知らせいただけますと大変助かります。
 
 ## 参考文献
 
