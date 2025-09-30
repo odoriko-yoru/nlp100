@@ -10,4 +10,4 @@ filename = Path("popular-names.txt")
 
 df = pd.read_csv(path / filename, sep="\t", header=None)
 
-print(df.sort_values(2))
+print(df.sort_values(2, ascending=False))

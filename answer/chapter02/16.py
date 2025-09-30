@@ -10,4 +10,4 @@ filename = Path("popular-names.txt")
 
 df = pd.read_csv(path / filename, sep="\t", header=None)
 
-print(df.sample(n=len(df)))
+print(df.sample(n=len(df), random_state=2025))

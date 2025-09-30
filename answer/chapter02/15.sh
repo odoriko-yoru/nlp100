@@ -4,4 +4,4 @@ n=$1
 
 mkdir output
 
-split -l $n ../../data/popular-names.txt output/15_split_
+split -n $n ../../data/popular-names.txt ./output/
