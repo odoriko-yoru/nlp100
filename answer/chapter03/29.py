@@ -29,8 +29,13 @@ def get_url(dc: dict) -> str:
         + url_file
         + "&prop=imageinfo&iiprop=url&format=json"
     )
-    data = requests.get(url)
-    return re.search(r'"url":"(.+?)"', data.text).group(1)
+    headers = {"User-Agent": "NLP100 2025 ch3"}
+    data = requests.get(url, headers=headers)
+    match = re.search(r'"url":"(.+?)"', data.text)
+    if match:
+        return match.group(1)
+    else:
+        return "URL not found"
 
 
 def main() -> None:
